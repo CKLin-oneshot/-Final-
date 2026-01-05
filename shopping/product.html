@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title id="page-title">商品</title> 
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200;500;900&display=swap" rel="stylesheet">
+   <link rel="stylesheet" href="styles/general.css">
+   <link rel="stylesheet" href="styles/components/header.css">
+   <link rel="stylesheet" href="styles/pages/product.css">
+</head>
+
+<body>
+   <div class="header">
+      <div class="header-container">
+         <div class="header-left">
+            <a href="home.html">
+               <img class="logo-icon" src="images/icons/logo.png">
+            </a>
+         </div>
+
+         <div class="header-right">
+            <div class="search">
+               <input class="search-input" placeholder="搜尋">
+               <button class="search-button">
+                  <img class="search-icon" src="images/icons/search.svg">
+               </button>
+            </div>
+            <div class="orders">
+               <a href="orders.html" style="color: #333; text-decoration: none; margin-right: 15px;">我的訂單</a>
+            </div>
+            <div class="cart">
+               <a href="checkout.html">
+                  <img class="cart-icon" src="images/icons/cart.png">
+               </a>
+               <p class="cart-num">0</p>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <div class="js-product-info">
+      <div class="product-block">
+                     <img id="product-image" class="product-image" src="" alt="產品圖片"/> 
+         <div class="product-information">
+                            <h1 id="product-name" class="product-name">載入中...</h1> 
+            <div class="product-rating">
+               <p class="rating-count">4.9</p>
+               <img class="rating-stars" src="images/ratings/rating_45.png">
+               <p class="comment-num">87 則評論</p>
+            </div>
+            <div class="sell-information">
+                                   <p id="product-discount" class="product-discount"></p> 
+               <p class="sell-num">已出售 200</p>
+            </div>
+            <div class="product-price">
+                                   <p id="origin-price" class="origin-price"></p> 
+                                   <p id="discount-price" class="discount-price"></p> 
+            </div>
+            
+            <div class="buy-num-row">
+               <p class="num-p">數量</p>      
+               <select class="buy-num">
+                  <option selected value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>               
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+               </select>
+               
+            </div>
+            <button class="add-to-cart">加入購物車</button>
+            <div class="add-success hidden-element">
+               <img class="check-icon" src="images/icons/check.png">
+               <p class="add-success-p">加入購物車</p>
+            </div>
+         </div>
+      </div>
+      <div class="description-block">
+         <p class="description-p">商品描述</p>
+                     <p id="product-description" class="product-description">
+            載入產品描述中...
+         </p>
+      </div>
+   </div>
+
+    <script src="js/cart.js"></script>
+    <script>
+        // 格式化價格：增加千位分隔符並加上 $ 符號
+        const formatPrice = (price) => `$${price.toLocaleString('en-US')}`;
+
+        // 從 API 載入產品詳情
+        async function loadProductDetail() {
+            // 1. 獲取網址中的 ID 參數 (例如：從 product.html?id=2 中取出 '2')
+            const params = new URLSearchParams(window.location.search);
+            // 確保 id 是一個數字。如果網址沒有 id，則預設載入 ID 1
+            const productId = parseInt(params.get('id')) || 1;
+
+            try {
+                // 2. 從 API 獲取產品資料
+                const response = await fetch(`http://localhost:3000/api/products/${productId}`);
+                const result = await response.json();
+                // API 返回的是 { success, data } 格式，需要取 data 字段
+                const product = result.data;
+
+                if (product) {
+                    // 3. 更新 HTML 元素內容
+                    document.getElementById('page-title').textContent = product.name;
+                    document.getElementById('product-image').src = product.image_url || 'images/product_images/placeholder.jpg';
+                    document.getElementById('product-name').textContent = product.name;
+                    document.getElementById('discount-price').textContent = formatPrice(product.current_price);
+
+                    // 使用產品描述（如果沒有則使用預設文字）
+                    document.getElementById('product-description').innerHTML = product.description || '這是一個很棒的產品！';
+
+                    // 處理原價和折扣標籤
+                    const originalPriceElement = document.getElementById('origin-price');
+                    const discountTextElement = document.getElementById('product-discount');
+
+                    // a. 處理原價
+                    if (product.original_price && product.original_price > product.current_price) {
+                        originalPriceElement.textContent = formatPrice(product.original_price);
+                        originalPriceElement.style.display = 'inline';
+                    } else {
+                        originalPriceElement.textContent = '';
+                        originalPriceElement.style.display = 'none';
+                    }
+
+                    // b. 計算並顯示折扣標籤
+                    if (product.original_price && product.original_price > product.current_price) {
+                        const discount = Math.round((product.current_price / product.original_price) * 10);
+                        discountTextElement.textContent = `${discount}折`;
+                        discountTextElement.style.display = 'inline';
+                    } else {
+                        discountTextElement.textContent = '';
+                        discountTextElement.style.display = 'none';
+                    }
+
+                    // 將產品資料儲存到全域變數，供購物車功能使用
+                    window.currentProduct = product;
+
+                } else {
+                    // 處理找不到產品的情況
+                    document.getElementById('product-name').textContent = "404 產品不存在";
+                    document.querySelector('.js-product-info').innerHTML = '<h1>404 產品不存在</h1><p>請確認您的連結是否正確。</p>';
+                }
+            } catch (error) {
+                console.error('載入產品詳情失敗:', error);
+                document.getElementById('product-name').textContent = "載入失敗";
+                document.querySelector('.js-product-info').innerHTML = '<h1>載入產品失敗</h1><p>請稍後再試或聯繫客服。</p>';
+            }
+        }
+
+        // 頁面載入時執行 loadProductDetail 函式
+        window.onload = function() {
+            loadProductDetail();
+
+            // 綁定搜索功能
+            const searchButton = document.querySelector('.search-button');
+            const searchInput = document.querySelector('.search-input');
+
+            // 搜索按钮点击事件
+            searchButton.addEventListener('click', function() {
+                const searchTerm = searchInput.value.trim();
+                if (searchTerm) {
+                    // 跳转到首页并传递搜索参数
+                    window.location.href = `home.html?search=${encodeURIComponent(searchTerm)}`;
+                }
+            });
+
+            // 搜索框回车事件
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = searchInput.value.trim();
+                    if (searchTerm) {
+                        window.location.href = `home.html?search=${encodeURIComponent(searchTerm)}`;
+                    }
+                }
+            });
+
+            // 等待產品資料載入完成後，綁定購物車按鈕事件
+            // 使用 setTimeout 確保 loadProductDetail 已經完成
+            setTimeout(() => {
+                const addToCartBtn = document.querySelector('.add-to-cart');
+                addToCartBtn.addEventListener('click', function() {
+                    // 從全域變數獲取當前產品資料
+                    const product = window.currentProduct;
+
+                    if (product) {
+                        // 獲取選擇的數量
+                        const quantitySelect = document.querySelector('.buy-num');
+                        const quantity = parseInt(quantitySelect.value) || 1;
+
+                        // 創建產品對象
+                        const productToAdd = {
+                            id: product.id,
+                            name: product.name,
+                            current_price: product.current_price,
+                            original_price: product.original_price || product.current_price,
+                            discount_text: product.discount_text,
+                            image_url: product.image_url
+                        };
+
+                        // 添加到購物車
+                        CartManager.addProduct(productToAdd, quantity);
+
+                        // 更新購物車數量顯示
+                        CartManager.updateCartBadge();
+
+                        // 顯示成功提示
+                        const successDiv = document.querySelector('.add-success');
+                        if (successDiv) {
+                            successDiv.classList.remove('hidden-element');
+                            setTimeout(() => {
+                                successDiv.classList.add('hidden-element');
+                            }, 1500);
+                        }
+                    }
+                });
+
+                // 更新購物車數量徽章
+                CartManager.updateCartBadge();
+            }, 500); // 等待 500ms 確保 API 請求完成
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>我的訂單</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200;500;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/general.css">
+    <link rel="stylesheet" href="styles/components/header.css">
+    <link rel="stylesheet" href="styles/pages/checkout.css">
+    <style>
+        .orders-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .orders-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .order-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: box-shadow 0.3s;
+        }
+
+        .order-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .order-status {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            background: #f0f0f0;
+        }
+
+        .order-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .order-status.paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .order-status.shipped {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .order-status.delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .order-info {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .order-total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e47911;
+        }
+
+        .order-items {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            display: none;
+        }
+
+        .order-items.show {
+            display: block;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .order-item-name {
+            color: #333;
+        }
+
+        .order-item-price {
+            color: #666;
+        }
+
+        .empty-orders {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-orders a {
+            color: #007bff;
+            text-decoration: none;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .back-home {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .back-home:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-container">
+            <div class="header-left">
+                <a href="home.html">
+                    <img class="logo-icon" src="images/icons/logo.png">
+                </a>
+            </div>
+
+            <div class="header-right">
+                <div class="search">
+                    <input class="search-input" placeholder="搜尋">
+                    <button class="search-button">
+                        <img class="search-icon" src="images/icons/search.svg">
+                    </button>
+                </div>
+                <div class="orders">
+                    <a href="orders.html" style="color: #333; text-decoration: none; margin-right: 15px; font-weight: bold;">我的訂單</a>
+                </div>
+                <div class="cart">
+                    <a href="checkout.html">
+                        <img class="cart-icon" src="images/icons/cart.png">
+                    </a>
+                    <p class="cart-num">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="orders-container">
+        <a href="home.html" class="back-home">← 回到首頁</a>
+        <h1 class="orders-title">我的訂單</h1>
+        <div id="orders-list">
+            <!-- 訂單列表將由 JavaScript 動態載入 -->
+        </div>
+    </div>
+
+    <script src="js/cart.js"></script>
+    <script>
+        // 格式化價格
+        const formatPrice = (price) => `$${price.toLocaleString('en-US')}`;
+
+        // 格式化日期
+        const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            return date.toLocaleString('zh-TW', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        };
+
+        // 獲取訂單列表
+        async function loadOrders() {
+            try {
+                const response = await fetch('http://localhost:3000/api/orders');
+                const result = await response.json();
+                const orders = result.data || [];
+
+                renderOrders(orders);
+            } catch (error) {
+                console.error('載入訂單失敗:', error);
+                document.getElementById('orders-list').innerHTML = '<p style="text-align: center; color: #666;">載入訂單失敗，請稍後再試</p>';
+            }
+        }
+
+        // 渲染訂單列表
+        function renderOrders(orders) {
+            const ordersList = document.getElementById('orders-list');
+
+            if (orders.length === 0) {
+                ordersList.innerHTML = `
+                    <div class="empty-orders">
+                        <p style="font-size: 18px;">您還沒有任何訂單</p>
+                        <a href="home.html">去逛逛吧</a>
+                    </div>
+                `;
+                return;
+            }
+
+            ordersList.innerHTML = '';
+
+            orders.forEach(order => {
+                const orderCard = document.createElement('div');
+                orderCard.className = 'order-card';
+                orderCard.onclick = () => toggleOrderItems(order.id);
+
+                const statusText = {
+                    'pending': '待付款',
+                    'paid': '已付款',
+                    'shipped': '配送中',
+                    'delivered': '已送達',
+                    'cancelled': '已取消'
+                }[order.status] || order.status;
+
+                orderCard.innerHTML = `
+                    <div class="order-header">
+                        <span class="order-number">訂單號：${order.order_number}</span>
+                        <span class="order-status ${order.status}">${statusText}</span>
+                    </div>
+                    <div class="order-info">
+                        <span>客戶：${order.customer_name}</span>
+                        <span>${formatDate(order.created_at)}</span>
+                    </div>
+                    <div class="order-info">
+                        <span class="order-total">總金額：${formatPrice(order.total_amount)}</span>
+                        <span></span>
+                    </div>
+                    <div class="order-items" id="order-items-${order.id}">
+                        <p style="margin-bottom: 8px; color: #666;">正在載入商品...</p>
+                    </div>
+                `;
+
+                ordersList.appendChild(orderCard);
+            });
+        }
+
+        // 切換訂單商品顯示
+        async function toggleOrderItems(orderId) {
+            const itemsDiv = document.getElementById(`order-items-${orderId}`);
+            itemsDiv.classList.toggle('show');
+
+            // 如果已經載入過，就不重複載入
+            if (itemsDiv.classList.contains('show') && !itemsDiv.dataset.loaded) {
+                try {
+                    const response = await fetch(`http://localhost:3000/api/orders/${orderId}`);
+                    const result = await response.json();
+                    const items = result.data.items || [];
+
+                    let itemsHtml = '';
+                    items.forEach(item => {
+                        itemsHtml += `
+                            <div class="order-item">
+                                <span class="order-item-name">${item.product_name} x ${item.quantity}</span>
+                                <span class="order-item-price">${formatPrice(item.product_price)}</span>
+                            </div>
+                        `;
+                    });
+
+                    itemsDiv.innerHTML = itemsHtml;
+                    itemsDiv.dataset.loaded = 'true';
+                } catch (error) {
+                    console.error('載入訂單詳情失敗:', error);
+                    itemsDiv.innerHTML = '<p style="color: #666;">載入失敗</p>';
+                }
+            }
+        }
+
+        // 綁定搜索功能
+        function bindSearch() {
+            const searchButton = document.querySelector('.search-button');
+            const searchInput = document.querySelector('.search-input');
+
+            searchButton.addEventListener('click', function() {
+                const searchTerm = searchInput.value.trim();
+                if (searchTerm) {
+                    window.location.href = `home.html?search=${encodeURIComponent(searchTerm)}`;
+                }
+            });
+
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const searchTerm = searchInput.value.trim();
+                    if (searchTerm) {
+                        window.location.href = `home.html?search=${encodeURIComponent(searchTerm)}`;
+                    }
+                }
+            });
+        }
+
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrders();
+            bindSearch();
+            CartManager.updateCartBadge();
+        });
+    </script>
+</body>
+
+</html>

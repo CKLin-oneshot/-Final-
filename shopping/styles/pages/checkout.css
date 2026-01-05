@@ -1,0 +1,242 @@
+/* 外層佈局容器：控制結帳頁面左側（商品列表）和右側（結帳摘要）的排列 */
+.checkout-row{
+  display: flex; /* 啟用 Flexbox 佈局 */
+  align-items: start; /* 項目從容器頂部開始對齊 */
+  margin-bottom:60px; /* 底部邊界空間 */
+}
+
+/* 結帳頁面左側區域：用於放置商品列表 */
+.checkout-left{
+  width:800px; /* 設定固定寬度 */
+  margin-right:40px; /* 右側與結帳摘要的間距 */
+  min-width: 580px; /* 確保最小寬度，避免在縮小時過於擁擠 */
+}
+
+/* 結帳頁面右側區域：用於顯示訂單摘要、運費等資訊 */
+.checkout-right{
+  background-color: white; /* 背景色為白色 */
+  flex:1; /* 佔據剩餘所有空間 */
+  border-radius: 15px; /* 圓角半徑 */
+  padding:20px; /* 內部填充空間 */
+  min-width: 200px; /* 確保最小寬度 */
+}
+
+/* 商品圖片的樣式 */
+.product-image{
+  width:200px; /* 圖片寬度 */
+  margin-right:20px; /* 圖片右側與文字資訊的間距 */
+  border-radius: 10px; /* 圓角半徑 */
+}
+
+/* 單個商品行的容器樣式 */
+.product-row{
+  padding:20px; /* 內部填充空間 */
+  display: flex; /* 啟用 Flexbox 佈局，使圖片和資訊並排 */
+  margin-bottom:20px; /* 每個商品行之間的底部間距 */
+  background-color: white; /* 背景色為白色 */
+  border-radius: 18px; /* 圓角半徑 */
+  align-items: start; /* 項目從容器頂部開始對齊 */
+}
+
+/* 商品名稱的樣式 */
+.product-name{
+  font-weight: 900; /* 字體加粗 */
+  font-size: 18px; /* 字體大小 */
+}
+
+/* 商品資訊區塊的樣式 (名稱、價格、數量、按鈕等) */
+.product-information{
+  flex:1; /* 佔據商品行中的剩餘空間 */
+}
+
+/* 產品詳細資訊的佈局容器 (用於分隔數量/按鈕與價格等) */
+.product-detail{
+  display: flex; /* 啟用 Flexbox 佈局 */
+  justify-content: space-between; /* 內容兩端對齊，空間平均分佈 */
+  align-items: center; /* 垂直居中對齊 */
+}
+
+/* 商品資訊區塊內的分隔線 */
+.product-information-hr{
+  margin: 30px 0px; /* 上下邊距 */
+}
+
+/* 價格顯示的佈局容器 */
+.product-price{
+  margin-top:20px; /* 頂部邊距 */
+  display: flex; /* 啟用 Flexbox 佈局 */
+  align-items: center; /* 垂直居中對齊 */
+}
+
+/* 原始價格（刪除線價格）的樣式 */
+.origin-price{
+  font-size: 16px; /* 字體大小 */
+  font-weight: 500; /* 字體粗細 */
+  color:gray; /* 文字顏色為灰色 */
+  text-decoration:line-through; /* 文本加刪除線 */
+  margin-right:20px; /* 右側間距 */
+}
+
+/* 折扣價格（最終價格）的樣式 */
+.discount-price{
+  font-size: 24px; /* 字體大小 */
+  font-weight: 900; /* 字體加粗 */
+  color:red; /* 顏色為紅色（強調） */
+}
+
+/* 購買數量行的佈局容器 */
+.buy-num-row{
+  display: flex; /* 啟用 Flexbox 佈局 */
+  align-items: center; /* 垂直居中對齊 */
+  margin-top:20px; /* 頂部邊距 */
+}
+
+/* 數量文字 "數量" 的樣式 */
+.num-p{
+  font-size: 16px; /* 字體大小 */
+  color: gray; /* 文字顏色為灰色 */
+  margin-right:40px; /* 右側間距 */
+}
+
+/* 數量選擇框（下拉選單）的樣式 */
+.buy-num{
+  font-size: 16px; /* 字體大小 */
+  width:100px; /* 寬度 */
+  padding: 0px 10px; /* 左右填充空間 */
+}
+
+/* 刪除商品按鈕的樣式 */
+.delete-from-cart{
+  /* margin-top:20px; */ /* (註釋掉的頂部邊距) */
+  width:80px; /* 寬度 */
+  font-size: 16px; /* 字體大小 */
+  padding: 8px 0px; /* 上下填充空間 */
+  background-color: #A9806A; /* 背景色為橘紅色 */
+  color: white; /* 文字顏色為白色 */
+  border: none; /* 無邊框 */
+  border-radius: 10px; /* 圓角半徑 */
+  cursor: pointer; /* 鼠標懸停時顯示手型 */
+}
+
+/* 刪除按鈕懸停 (Hover) 時的樣式 */
+.delete-from-cart:hover{
+  background-color: #f87a58; /* 顏色變淺 */
+}
+
+/* 刪除按鈕被點擊 (Active) 時的樣式 */
+.delete-from-cart:active{
+  background-color: #fc9376; /* 顏色變得更淺 */
+}
+
+/* 運送選項標題的樣式 */
+.delivery-option-p{
+  font-weight: 900; /* 字體加粗 */
+  font-size: 18px; /* 字體大小 */
+  margin-bottom: 20px; /* 底部間距 */
+}
+
+/* 單個運送選項的佈局容器 */
+.delivery-option{
+  margin-bottom:10px; /* 底部間距 */
+  display: flex; /* 啟用 Flexbox 佈局 */
+  align-items: center; /* 垂直居中對齊 */
+}
+
+/* 運送選項的單選框 (Input) */
+.delivery-option-input{
+  /* height:25px; */ /* (註釋掉的高度) */
+  margin-top:2px; /* 頂部微調 */
+  /* display: flex;
+  align-items: center; */ /* (註釋掉的佈局) */
+}
+
+/* 將 Input 和名稱設定右側間距 */
+.delivery-option-input,
+.delivery-option-name{
+  margin-right:20px; 
+}
+
+/* 運送選項名稱的樣式 */
+.delivery-option-name{
+  font-size:16px; /* 字體大小 */
+  font-weight: 500; /* 字體粗細 */
+  color: gray; /* 文字顏色為灰色 */
+}
+
+/* 運送選項價格的樣式 */
+.delivery-option-price{
+  font-size:16px; /* 字體大小 */
+  font-weight: 900; /* 字體加粗 */
+  color: red; /* 顏色為紅色（強調） */
+}
+
+
+/* 結帳摘要標題的樣式 */
+.heckout-summary{
+  font-size: 30px; /* 字體大小 */
+}
+
+/* 摘要中的 "商品總計" 項目 */
+.checkout-items{
+  margin-top:30px; /* 頂部間距 */
+  font-size:20px; /* 字體大小 */
+}
+
+/* "商品總計" 的價格行佈局 */
+.items-price{
+  margin-top:15px; /* 頂部間距 */
+  font-size:20px; /* 字體大小 */
+  display: flex; 
+  justify-content: space-between; /* 左右兩端對齊 */
+}
+
+/* "運費" 的價格行佈局 */
+.delivery-price{
+  margin-top:15px; /* 頂部間距 */
+  font-size:20px; /* 字體大小 */
+  display: flex; 
+  justify-content: space-between; /* 左右兩端對齊 */
+}
+
+/* 結帳摘要區塊內的分隔線 */
+.checkout-summary-hr{
+  margin:20px 0px; /* 上下邊距 */
+}
+
+/* "總金額" 顯示行的樣式 */
+.total-price{
+  font-size:20px; /* 字體大小 */
+  font-weight: 900; /* 字體加粗 */
+  display: flex; 
+  justify-content: space-between; /* 左右兩端對齊 */
+}
+
+/* "總金額" 中的實際數字（強調顏色） */
+.total-price span
+{
+  color:red; /* 顏色為紅色 */
+}
+
+/* 結帳按鈕的樣式 */
+.checkout-button{
+  margin-top:40px; /* 頂部間距 */
+  font-size:20px; /* 字體大小 */
+  width:100%; /* 寬度佔滿容器 */
+  background-color: #A9806A; /* 背景色為深藍色 */
+  color: white; /* 文字顏色為白色 */
+  border: none; /* 無邊框 */
+  border-radius: 10px; /* 圓角半徑 */
+  cursor: pointer; /* 鼠標懸停時顯示手型 */
+  padding: 8px 0px; /* 上下填充空間 */
+  margin-bottom: 10px; /* 底部間距 */
+}
+
+/* 結帳按鈕懸停 (Hover) 時的樣式 */
+.checkout-button:hover{
+  background-color: #f87a58; /* 顏色變淺 */
+}
+
+/* 結帳按鈕被點擊 (Active) 時的樣式 */
+.checkout-button:active{
+  background-color: #fc9376; /* 顏色變得更淺 */
+}

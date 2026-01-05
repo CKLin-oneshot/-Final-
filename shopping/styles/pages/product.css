@@ -1,0 +1,202 @@
+/* 產品名稱 */
+.product-name{
+  font-size: 26px; /* 字體大小 */
+  font-weight: 900; /* 字體極粗 */
+  margin-top: 12px; /* 頂部邊距 */
+}
+
+/* 評價區塊（星級和數量）的容器 */
+.product-rating{
+  margin-top:20px; /* 頂部邊距 */
+  display: flex; /* 啟用 Flexbox 佈局 */
+  align-items: center; /* 垂直居中對齊 */
+}
+
+/* 評價計數（例如：4.5/5）的樣式 */
+.rating-count{
+  color: gray; /* 文字顏色為灰色 */
+  margin-right:10px; /* 右側與星級圖標的間距 */
+}
+
+/* 評價星級圖標的樣式 */
+.rating-stars{
+  margin-right: 20px; /* 右側邊距 */
+  height: 20px; /* 高度 */
+  margin-right: 30px; /* 再次設定右側邊距（可能用於不同元素間隔） */
+}
+
+/* 評論數量（例如：(120 評論)）的樣式 */
+.comment-num{
+  color: gray; /* 文字顏色為灰色 */
+}
+
+/* 銷售資訊（折扣標籤和銷量）的容器 */
+.sell-information{
+  margin-top:20px; /* 頂部邊距 */
+  display: flex; /* 啟用 Flexbox 佈局 */
+  align-items: center; /* 垂直居中對齊 */
+}
+
+/* 產品折扣標籤（例如：限時特價）的樣式 */
+.product-discount{
+  color: white; /* 文字顏色為白色 */
+  background-color: #f86c45; /* 背景色為橘紅色（強調色） */
+  font-size: 14px; /* 字體大小 */
+  border-radius: 4px; /* 圓角半徑 */
+  margin-right:20px; /* 右側間距 */
+  padding:2px 10px; /* 內部填充空間 */
+}
+
+/* 銷量數量（例如：已售出 500 件）的樣式 */
+.sell-num{
+  font-size: 16px; /* 字體大小 */
+  font-weight: 500; /* 字體中等粗細 */
+  color:gray; /* 文字顏色為灰色 */
+}
+
+/* 價格區塊的容器（包含原價和折扣價） */
+.product-price{
+  margin-top:40px; /* 頂部邊距 */
+  display: flex; /* 啟用 Flexbox 佈局 */
+  align-items: center; /* 垂直居中對齊 */
+  background-color:rgb(242, 242, 242); /* 價格區塊的淺灰色背景 */
+  padding: 15px 20px; /* 內部填充空間 */
+  border-radius: 10px; /* 圓角半徑 */
+}
+
+/* 原始價格（被刪除線劃掉的價格）的樣式 */
+.origin-price{
+  font-size: 20px; /* 字體大小 */
+  font-weight: 500; /* 字體中等粗細 */
+  color:gray; /* 文字顏色為灰色 */
+  text-decoration:line-through; /* 添加刪除線 */
+  margin-right:20px; /* 右側與折扣價的間距 */
+}
+
+/* 折扣價格（最終購買價格）的樣式 */
+.discount-price{
+  font-size: 30px; /* 字體大小 */
+  font-weight: 900; /* 字體極粗 */
+  color:red; /* 顏色為紅色（強調價格） */
+}
+
+/* 購買數量選擇行的容器 */
+.buy-num-row{
+  display: flex; /* 啟用 Flexbox 佈局 */
+  align-items: center; /* 垂直居中對齊 */
+  margin-top:40px; /* 頂部邊距 */
+}
+
+/* 數量文字（例如：購買數量）的樣式 */
+.num-p{
+  font-size: 18px; /* 字體大小 */
+  color: gray; /* 文字顏色為灰色 */
+  margin-right:40px; /* 右側與數量選擇框的間距 */
+}
+
+/* 數量選擇框（下拉選單或輸入框）的樣式 */
+.buy-num{
+  font-size: 18px; /* 字體大小 */
+  width:100px; /* 寬度 */
+}
+
+/* 加入購物車按鈕的樣式 */
+.add-to-cart{
+  margin-top:50px; /* 頂部邊距 */
+  width:200px; /* 寬度 */
+  font-size: 18px; /* 字體大小 */
+  padding: 15px 0px; /* 上下填充空間 */
+  background-color: #f86c45; /* 背景色為橘紅色 */
+  color: white; /* 文字顏色為白色 */
+  border: none; /* 無邊框 */
+  border-radius: 10px; /* 圓角半徑 */
+  cursor: pointer; /* 鼠標懸停時顯示手型 */
+}
+
+/* 加入購物車按鈕懸停 (Hover) 時的樣式 */
+.add-to-cart:hover{
+  background-color: #f87a58; /* 背景顏色變淺 */
+}
+
+/* 加入購物車按鈕被點擊 (Active) 時的樣式 */
+.add-to-cart:active{
+  background-color: #fc9376; /* 背景顏色變得更淺 */
+}
+
+/* 成功加入購物車提示的容器 */
+.add-success{
+  display: flex; /* 啟用 Flexbox 佈局 */
+  align-items: center; /* 垂直居中對齊 */
+  margin-top: 20px; /* 頂部邊距 */
+}
+
+/* 用於淡出效果：初始透明度為 0 (隱藏) */
+.hidden-element {
+  opacity: 0; /* 完全透明 */
+  transition: opacity 2s ease; /* 2 秒的淡入/淡出過渡效果 */
+}
+  
+/* 用於淡入效果：透明度為 1 (可見) */
+.visible-element {
+  opacity: 1; /* 完全可見 */
+  transition: opacity 1s ease; /* 1 秒的淡入/淡出過渡效果 */
+}
+
+/* 成功提示旁的打勾圖標 */
+.check-icon{
+  height: 20px; /* 高度 */
+  margin-right:10px; /* 右側間距 */
+}
+
+/* 成功加入購物車文字的樣式 */
+.add-success-p{
+  color:rgb(6, 125, 98); /* 顏色為深綠色 */
+  font-size: 18px; /* 字體大小 */
+}
+
+
+/* 產品大圖的樣式 */
+.product-image{
+  width:400px; /* 寬度 */
+  border-radius: 16px; /* 圓角半徑 */
+  margin-right:30px; /* 右側與資訊區塊的間距 */
+}
+
+/* 產品主要資訊區塊的容器（圖片和文字資訊） */
+.product-block{
+  display: flex; /* 啟用 Flexbox 佈局 */
+  background-color: white; /* 背景色為白色 */
+  border-radius: 15px; /* 圓角半徑 */
+  padding:10px 40px 25px 40px; /* 內部填充空間 */
+  align-items: start; /* 項目從容器頂部開始對齊 */
+}
+
+/* 產品文字資訊（右側）的容器 */
+.product-information{
+  flex:1; /* 佔據剩餘所有空間 */
+  margin:12px; /* 邊界空間 */
+}
+
+/* 產品描述區塊（位於主要產品區塊下方） */
+.description-block{
+  margin-top:40px; /* 頂部邊距 */
+  margin-bottom:40px; /* 底部邊距 */
+  background-color: white; /* 背景色為白色 */
+  border-radius: 15px; /* 圓角半徑 */
+  padding:40px; /* 內部填充空間 */
+}
+
+/* 描述區塊中的標題或分隔條 */
+.description-p{
+  font-size: 20px; /* 字體大小 */
+  padding: 10px 20px; /* 內部填充空間 */
+  background-color: rgb(242, 242, 242); /* 淺灰色背景 */
+  border-radius: 8px; /* 圓角半徑 */
+}
+
+/* 產品詳細描述內容的樣式 */
+.product-description{
+  margin-top:30px; /* 頂部邊距 */
+  padding: 0 20px; /* 左右填充空間 */
+  line-height: 45px; /* 行高（使文字間距較大） */
+}

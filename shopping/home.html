@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>home</title>
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200;500;900&display=swap" rel="stylesheet">
+   <link rel="stylesheet" href="styles/general.css">
+   <link rel="stylesheet" href="styles/components/header.css">
+   <link rel="stylesheet" href="styles/components/product-grid.css">
+</head>
+
+<body>
+   <div class="header">
+      <div class="header-container">
+         <div class="header-left">
+            <a href="home.html">
+               <img class="logo-icon" src="images/icons/logo.png">
+            </a>
+         </div>
+
+         <div class="header-right">
+            <div class="search">
+               <input class="search-input" placeholder="搜尋">
+               <button class="search-button">
+                  <img class="search-icon" src="images/icons/search.svg">
+               </button>
+            </div>
+            <div class="orders">
+               <a href="orders.html" style="color: #333; text-decoration: none; margin-right: 15px;">我的訂單</a>
+            </div>
+            <div class="cart">
+               <a href="checkout.html">
+                  <img class="cart-icon" src="images/icons/cart.png">
+               </a>
+               <p class="cart-num">0</p>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <div class="product-grid" id="product-grid">
+      <!-- 產品將由 JavaScript 動態載入 -->
+   </div>
+
+   <script src="js/cart.js"></script>
+   <script>
+      // 從 API 獲取產品數據並渲染
+      async function loadProducts() {
+         try {
+            const response = await fetch('http://localhost:3000/api/products');
+            const result = await response.json();
+            // API 返回的是 { success, count, data } 格式，需要取 data 字段
+            const products = result.data || [];
+            renderProducts(products);
+            bindCartEvents(products);
+         } catch (error) {
+            console.error('載入產品失敗:', error);
+            document.getElementById('product-grid').innerHTML = '<p>載入產品失敗，請稍後再試</p>';
+         }
+      }
+
+      // 渲染產品到頁面
+      function renderProducts(products) {
+         const productGrid = document.getElementById('product-grid');
+         productGrid.innerHTML = '';
+
+         products.forEach(product => {
+            const productBlock = document.createElement('div');
+            productBlock.className = 'product-block';
+
+            // 計算折扣文字
+            let discountText = '';
+            if (product.original_price && product.original_price > product.current_price) {
+               const discount = Math.round((product.current_price / product.original_price) * 10);
+               discountText = `${discount}折`;
+            }
+
+            productBlock.innerHTML = `
+               <a href="product.html?id=${product.id}">
+                  <div class="product-image-row">
+                     <img class="product-image" src="${product.image_url || 'images/product_images/placeholder.jpg'}">
+                     ${discountText ? `<p class="product-discount">${discountText}</p>` : ''}
+                  </div>
+                  <div class="product-information">
+                     <div class="product-text">
+                        <p class="product-name">${product.name}</p>
+                        <div class="add-success hidden-element">
+                           <img class="check-icon" src="images/icons/check.png">
+                           <p class="add-success-p">加入購物車</p>
+                        </div>
+                        <div class="product-price-row">
+                           <div class="product-price">
+                              <p class="discount-price">$${product.current_price.toLocaleString('en-US')}</p>
+                              ${product.original_price && product.original_price > product.current_price ? `<p class="origin-price">$${product.original_price.toLocaleString('en-US')}</p>` : ''}
+                           </div>
+                           <img class="add-to-cart" src="images/icons/cart.png" data-product-id="${product.id}">
+                        </div>
+                     </div>
+                  </div>
+               </a>
+            `;
+
+            productGrid.appendChild(productBlock);
+         });
+      }
+
+      // 綁定購物車事件
+      function bindCartEvents(products) {
+         // 更新购物车数量显示
+         CartManager.updateCartBadge();
+
+         // 为所有"加入购物车"按钮添加点击事件
+         document.querySelectorAll('.add-to-cart').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+               e.preventDefault();
+               e.stopPropagation();
+
+               const productId = parseInt(this.getAttribute('data-product-id'));
+               const product = products.find(p => p.id === productId);
+
+               if (product) {
+                  // 创建产品对象
+                  const productToAdd = {
+                     id: product.id,
+                     name: product.name,
+                     current_price: product.current_price,
+                     original_price: product.original_price || product.current_price,
+                     discount_text: product.discount_text,
+                     image_url: product.image_url
+                  };
+
+                  // 添加到购物车
+                  CartManager.addProduct(productToAdd, 1);
+
+                  // 更新购物车数量显示
+                  CartManager.updateCartBadge();
+
+                  // 显示成功提示
+                  CartManager.showAddSuccessMessage(this);
+               }
+            });
+         });
+      }
+
+      // 搜索产品功能
+      async function searchProducts(searchTerm) {
+         if (!searchTerm) {
+            // 如果搜索词为空，加载所有产品
+            loadProducts();
+            return;
+         }
+
+         // 更新搜索框显示
+         const searchInput = document.querySelector('.search-input');
+         searchInput.value = searchTerm;
+
+         try {
+            const response = await fetch(`http://localhost:3000/api/search?q=${encodeURIComponent(searchTerm)}`);
+            const result = await response.json();
+            const products = result.data || [];
+            renderProducts(products);
+            bindCartEvents(products);
+
+            // 显示搜索结果数量
+            const productGrid = document.getElementById('product-grid');
+            if (products.length === 0) {
+               productGrid.innerHTML = '<p style="text-align: center; padding: 40px; color: #666;">沒有找到相關產品</p>';
+            }
+         } catch (error) {
+            console.error('搜索失敗:', error);
+            document.getElementById('product-grid').innerHTML = '<p>搜索失敗，請稍後再試</p>';
+         }
+      }
+
+      // 页面加载完成后初始化
+      document.addEventListener('DOMContentLoaded', function() {
+         // 检查 URL 中是否有搜索参数
+         const params = new URLSearchParams(window.location.search);
+         const searchTerm = params.get('search');
+
+         if (searchTerm) {
+            // 如果有搜索参数，执行搜索
+            searchProducts(searchTerm);
+         } else {
+            // 否则加载所有产品
+            loadProducts();
+         }
+
+         // 绑定搜索按钮点击事件
+         const searchButton = document.querySelector('.search-button');
+         const searchInput = document.querySelector('.search-input');
+
+         searchButton.addEventListener('click', function() {
+            const term = searchInput.value.trim();
+            searchProducts(term);
+         });
+
+         // 绑定回车键搜索
+         searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+               const term = searchInput.value.trim();
+               searchProducts(term);
+            }
+         });
+      });
+   </script>
+</body>
+</html>

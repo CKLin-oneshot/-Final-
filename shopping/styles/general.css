@@ -1,0 +1,19 @@
+    /* 通配符選擇器 (Universal Selector) - 應用於 HTML 文件中的所有元素 */
+    * {
+    font-family: 'Noto Serif TC', serif; /* 設定所有元素的字體為 'Noto Serif TC'，如果沒有則使用 'serif' 字體 */
+    padding: 0px; /* 移除所有元素的內邊距 (Padding) */
+    margin: 0px; /* 移除所有元素的外邊距 (Margin) */
+    text-decoration: none; /* 移除所有文本的裝飾 (例如：連結的下劃線) */
+    color: black; /* 設定所有元素的基本文字顏色為黑色 */
+    }
+
+    /* 網頁主體容器 */
+    body {
+    min-height: 1000px; /* 設定頁面主體的最小高度，確保內容足夠長 */
+    padding-top: 100px; /* 頂部填充空間 100px，通常用於為固定定位的導覽列 (Header) 騰出空間 */
+    max-width: 1200px; /* 設定內容區塊的最大寬度為 1200px */
+    margin: 0 auto; /* 左右邊距自動 (auto)，用於在瀏覽器中將內容區塊置中 */
+    padding-left: 32px; /* 左側內邊距 */
+    padding-right: 32px; /* 右側內邊距 */
+    background-color: #fafafa; /* 設定網頁主體背景顏色為淺灰色 (Light Gray)，幾乎是白色 */
+    }

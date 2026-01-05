@@ -1,0 +1,345 @@
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <title>結帳</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200;500;900&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="styles/general.css">
+        <link rel="stylesheet" href="styles/components/header.css">
+        <link rel="stylesheet" href="styles/pages/checkout.css">
+    </head>
+
+    <body>
+        <div class="header">
+            <div class="header-container">
+                <div class="header-left">
+                    <a href="home.html">
+                        <img class="logo-icon" src="images/icons/logo.png">
+                    </a>
+                </div>
+
+                <div class="header-right">
+                    <div class="search">
+                        <input class="search-input" placeholder="搜尋">
+                        <button class="search-button">
+                            <img class="search-icon" src="images/icons/search.svg">
+                        </button>
+                    </div>
+                    <div class="orders">
+                        <a href="orders.html" style="color: #333; text-decoration: none; margin-right: 15px;">我的訂單</a>
+                    </div>
+                    <div class="cart">
+                        <a href="checkout.html">
+                            <img class="cart-icon" src="images/icons/cart.png">
+                        </a>
+                        <p class="cart-num">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="checkout-row">
+            <div class="checkout-left" id="cart-items-container">
+                <!-- 購物車商品將由 JavaScript 動態生成 -->
+            </div>
+            <div class="checkout-right">
+                <h2 class="checkout-summary">訂單總結</h2>
+                <p class="checkout-items">總共 3 樣商品</p>
+                <p class="items-price">
+                    <span>金額 : </span>
+                    <span>$5000</span>
+                </p>
+                <p class="delivery-price">
+                    <span>運費 : </span>
+                    <span>$800</span>
+                </p>
+                <hr class="checkout-summary-hr">
+                <p class="total-price">
+                    <span>總額 : </span>
+                    <span>$5800</span>
+                </p>
+
+                <!-- 用戶信息表單 -->
+                <div class="customer-info" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
+                    <h3 style="margin-bottom: 10px;">客戶信息</h3>
+                    <input type="text" id="customer-name" placeholder="姓名" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    <input type="tel" id="customer-phone" placeholder="電話" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+
+                <button class="checkout-button" id="submit-order">結帳</button>
+                <script src="js/cart.js"></script>
+                <script>
+                    // 1. 獲取所有需要操作的 DOM 元素
+                    const checkoutRow = document.querySelector('.checkout-row'); // 整個左側商品容器
+                    const cartItemsContainer = document.getElementById('cart-items-container'); // 購物車商品容器
+
+                    // 訂單總結欄位的元素
+                    const itemsPriceElement = document.querySelector('.items-price span:last-child');
+                    const deliveryPriceElement = document.querySelector('.delivery-price span:last-child');
+                    const totalPriceElement = document.querySelector('.total-price span:last-child');
+                    const checkoutSummaryItems = document.querySelector('.checkout-summary').nextElementSibling;
+                    const cartNumHeader = document.querySelector('.cart-num'); // 頂部購物車數字
+                    const checkoutButton = document.querySelector('.checkout-button');
+
+                    // 2. 動態載入購物車商品
+                    function loadCartItems() {
+                        const cart = CartManager.getCart();
+
+                        // 清空容器
+                        cartItemsContainer.innerHTML = '';
+
+                        // 檢查購物車是否為空
+                        if (cart.products.length === 0) {
+                            cartItemsContainer.innerHTML = `
+                                <div style="text-align: center; padding: 40px; color: #666;">
+                                    <p style="font-size: 18px;">您的購物車是空的</p>
+                                    <a href="home.html" style="color: #007bff; text-decoration: none;">去逛逛吧</a>
+                                </div>
+                            `;
+                            return;
+                        }
+
+                        // 為每個商品創建 HTML 元素
+                        cart.products.forEach((product, index) => {
+                            const productRow = document.createElement('div');
+                            productRow.className = 'product-row';
+                            productRow.setAttribute('data-product-id', product.id);
+
+                            productRow.innerHTML = `
+                                <img class="product-image" src="${product.image_url}" />
+                                <div class="product-information">
+                                    <p class="product-name">${product.name}</p>
+                                    <div class="product-detail">
+                                        <div class="product-detail-left">
+                                            <div class="product-price">
+                                                <p class="origin-price">${product.original_price > product.current_price ? '$' + product.original_price : ''}</p>
+                                                <p class="discount-price">$${product.current_price}</p>
+                                            </div>
+                                            <div class="buy-num-row">
+                                                <p class="num-p">數量</p>
+                                                <input class="buy-num" type="number" value="${product.quantity}" min="1">
+                                            </div>
+                                        </div>
+                                        <div class="product-detail-right">
+                                            <button class="delete-from-cart">刪除</button>
+                                        </div>
+                                    </div>
+                                    <hr class="product-information-hr">
+                                    <div class="delivery-options">
+                                        <p class="delivery-option-p">運送方式</p>
+                                        <div class="delivery-option">
+                                            <input type="radio" checked class="delivery-option-input" name="delivery-option-${index}">
+                                            <p class="delivery-option-name">自行取貨</p>
+                                            <p class="delivery-option-price">$0</p>
+                                        </div>
+                                        <div class="delivery-option">
+                                            <input type="radio" class="delivery-option-input" name="delivery-option-${index}">
+                                            <p class="delivery-option-name">超商取貨</p>
+                                            <p class="delivery-option-price">$60</p>
+                                        </div>
+                                        <div class="delivery-option">
+                                            <input type="radio" class="delivery-option-input" name="delivery-option-${index}">
+                                            <p class="delivery-option-name">宅配到家</p>
+                                            <p class="delivery-option-price">$120</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+
+                            cartItemsContainer.appendChild(productRow);
+                        });
+                    }
+
+                    // 2. 核心：計算和更新訂單總結的函式
+                    function updateSummary() {
+                        let totalItemsPrice = 0;
+                        let totalDeliveryPrice = 0;
+                        let totalItemsCount = 0;
+
+                        // 重新獲取頁面上所有當前存在的商品行
+                        const currentProductRows = document.querySelectorAll('.product-row');
+
+                        currentProductRows.forEach(row => {
+                            // 從 HTML 中讀取該商品的數據：
+
+                            // a. 讀取商品單價 (折扣價)
+                            const priceText = row.querySelector('.discount-price').textContent.replace('$', '');
+                            const price = parseInt(priceText) || 0;
+
+                            // b. 讀取購買數量
+                            const quantityInput = row.querySelector('.buy-num');
+                            let quantity = 1;
+                            if (quantityInput) {
+                                quantity = parseInt(quantityInput.value) || 1;
+                                // 確保數量不小於 1
+                                if (quantity < 1) {
+                                    quantity = 1;
+                                    quantityInput.value = 1;
+                                }
+                            }
+
+                            // c. 讀取選中的運費
+                            let deliveryPrice = 0;
+                            // 由於運送選項是依賴 radio name (delivery-option-X) 分組，我們直接找當前商品行內選中的 radio
+                            const selectedDeliveryRadio = row.querySelector('input[type="radio"]:checked');
+                            if (selectedDeliveryRadio) {
+                                // 找到選中 radio 旁邊的運費價格
+                                const priceElement = selectedDeliveryRadio.closest('.delivery-option').querySelector('.delivery-option-price');
+                                const deliveryPriceText = priceElement.textContent.replace('$', '');
+                                deliveryPrice = parseInt(deliveryPriceText) || 0;
+                            }
+
+                            // 累積總數
+                            totalItemsPrice += price * quantity;
+                            totalDeliveryPrice += deliveryPrice;
+                            totalItemsCount += quantity;
+                        });
+
+                        const totalPrice = totalItemsPrice + totalDeliveryPrice;
+
+                        // 3. 將計算結果更新到頁面右側的總結區和頂部購物車
+                        checkoutSummaryItems.textContent = `總共 ${totalItemsCount} 樣商品`;
+                        itemsPriceElement.textContent = `$${totalItemsPrice.toLocaleString('en-US')}`;
+                        deliveryPriceElement.textContent = `$${totalDeliveryPrice.toLocaleString('en-US')}`;
+                        totalPriceElement.textContent = `$${totalPrice.toLocaleString('en-US')}`;
+                        cartNumHeader.textContent = totalItemsCount;
+
+                        // 根據商品總數啟用或禁用結帳按鈕
+                        checkoutButton.disabled = totalItemsCount === 0;
+                    }
+
+                    // 4. 使用事件委託來處理所有互動 (刪除、數量、運費)
+                    // 在最外層容器上監聽事件，確保元素被刪除後，其他元素的監聽器仍有效。
+                    checkoutRow.addEventListener('click', (event) => {
+                        const target = event.target;
+
+                        // *** 處理刪除按鈕功能 (核心需求) ***
+                        if (target.classList.contains('delete-from-cart')) {
+                            const rowToRemove = target.closest('.product-row');
+                            if (rowToRemove) {
+                                // 獲取商品ID (從 data-product-id 屬性)
+                                const productId = parseInt(rowToRemove.getAttribute('data-product-id'));
+                                if (productId) {
+                                    // 從 localStorage 的購物車中刪除商品
+                                    CartManager.removeProduct(productId);
+                                    // 更新頂部購物車數量徽章
+                                    CartManager.updateCartBadge();
+                                }
+                                // 移除整個商品區塊
+                                rowToRemove.remove();
+                                // 重新計算總結
+                                updateSummary();
+                            }
+                        }
+                    });
+
+                    checkoutRow.addEventListener('change', (event) => {
+                        const target = event.target;
+
+                        // 處理數量輸入框變動
+                        if (target.classList.contains('buy-num')) {
+                            const row = target.closest('.product-row');
+                            const productId = parseInt(row.getAttribute('data-product-id'));
+                            const newQuantity = parseInt(target.value) || 1;
+
+                            // 更新 localStorage 中的購物車
+                            CartManager.updateQuantity(productId, newQuantity);
+                            // 更新頂部購物車數量徽章
+                            CartManager.updateCartBadge();
+                            // 重新計算總結
+                            updateSummary();
+                        }
+
+                        // 處理運送方式 Radio 變動
+                        if (target.type === 'radio' && target.closest('.delivery-options')) {
+                            updateSummary(); // 重新計算總結
+                        }
+                    });
+
+                    // 處理結帳按鈕點擊
+                    checkoutButton.addEventListener('click', async () => {
+                        // 獲取用戶信息
+                        const customerName = document.getElementById('customer-name').value.trim();
+                        const customerPhone = document.getElementById('customer-phone').value.trim();
+
+                        if (!customerName || !customerPhone) {
+                            alert('請填寫姓名和電話');
+                            return;
+                        }
+
+                        // 獲取購物車數據
+                        const cart = CartManager.getCart();
+                        if (cart.products.length === 0) {
+                            alert('購物車是空的');
+                            return;
+                        }
+
+                        try {
+                            // 提交訂單到後端
+                            const response = await fetch('http://localhost:3000/api/orders', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    customer_name: customerName,
+                                    customer_phone: customerPhone,
+                                    cart: cart
+                                })
+                            });
+
+                            const result = await response.json();
+
+                            if (result.success) {
+                                alert(`訂單創建成功！\n訂單號：${result.order_number}`);
+                                // 清空購物車
+                                CartManager.clearCart();
+                                // 跳轉到訂單歷史頁面
+                                window.location.href = 'orders.html';
+                            } else {
+                                alert('結帳失敗：' + result.error);
+                            }
+                        } catch (error) {
+                            console.error('結帳失敗:', error);
+                            alert('結帳失敗，請稍後再試');
+                        }
+                    });
+
+                    // 5. 綁定搜索功能
+                    const searchButton = document.querySelector('.search-button');
+                    const searchInput = document.querySelector('.search-input');
+
+                    // 搜索按钮点击事件
+                    searchButton.addEventListener('click', function() {
+                        const searchTerm = searchInput.value.trim();
+                        if (searchTerm) {
+                            // 跳转到首页并传递搜索参数
+                            window.location.href = `home.html?search=${encodeURIComponent(searchTerm)}`;
+                        }
+                    });
+
+                    // 搜索框回车事件
+                    searchInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            const searchTerm = searchInput.value.trim();
+                            if (searchTerm) {
+                                window.location.href = `home.html?search=${encodeURIComponent(searchTerm)}`;
+                            }
+                        }
+                    });
+
+                    // 6. 頁面載入時載入購物車商品並執行計算
+                    loadCartItems();
+                    updateSummary();
+                    // 更新頂部購物車數量徽章
+                    CartManager.updateCartBadge(); 
+                </script>
+
+
+
+
+    </body>
+
+    </html>

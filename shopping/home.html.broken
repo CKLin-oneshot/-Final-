@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>home</title>
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href=
+
+<script src="js/cart.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+   CartManager.updateCartBadge();
+   
+   document.querySelectorAll('.add-to-cart').forEach(button => {
+      button.addEventListener('click', function(e) {
+         e.stopPropagation();
+         
+         const productId = parseInt(this.getAttribute('data-product-id'));
+         const product = {
+            id: productId,
+            name: this.closest('.product-block').querySelector('.product-name').textContent,
+            current_price: parseInt(this.closest('.product-price-row').querySelector('.discount-price').textContent.replace('
+</html>, '').replace(',', '')),
+            original_price: (() => {
+               const originPriceEl = this.closest('.product-price-row').querySelector('.origin-price');
+               return originPriceEl && originPriceEl.textContent ? 
+                      parseInt(originPriceEl.textContent.replace('
+</html>, '').replace(',', '')) : null;
+            })(),
+            discount_text: this.closest('.product-block').querySelector('.product-discount').textContent || null,
+            image_url: this.closest('.product-block').querySelector('.product-image').src
+         };
+         
+         CartManager.addProduct(product, 1);
+         CartManager.updateCartBadge();
+         CartManager.showAddSuccessMessage(this);
+      });
+   });
+});
+</script>
+</body>
+</html>
